@@ -8,7 +8,8 @@
 //      <Revision number>: <Date>: <Comments>
 //
 // Description: 
-//      
+//
+// <Description here>
 //
 // Targeted device: <Family::PolarFireSoC> <Die::MPFS095T> <Package::FCSG325>
 // Author: <Name>
@@ -17,46 +18,45 @@
 
 //`timescale <time_units> / <precision>
 
-module ButtonStateDetect(clk, reset, button, state);
-    input wire clk, button, reset;     // Clock 50MHz
+module ButtonStateDetect(clk,reset, button, state);
+    input wire clk, button, reset;
     output reg [1:0] state;
 
+    parameter FREQ_CLK = 30'd50_000_000;
 //<statements>
     reg preButton;
     reg [29:0] counter;
-    reg [29:0] counter4Hz;
-    
+    reg [29:0] counter10Hz;
     
     
     always @ (posedge clk) begin
         if (reset == 1'b0) begin
             preButton   <= 1'b1;
             counter     <= 30'd0;
-            counter4Hz  <= 30'd0;
-            state       <= 2'b0;
+            counter10Hz <= 23'd0;
+            state       <= 2'd0;
         end
         else begin 
             preButton <= button;
-            state <= 2'b0;
+            state <= 2'd0;
             
-            if (preButton == 1'b1 && button == 0) counter <= 0; // su?n xu?ng
-            if (preButton == 1'b0 && button == 1'b0) begin    /// dang gi? m?c tích c?c
-                if (counter < 30'd49_999_999) counter <= counter + 1; // gi? ít hon 2 s
-                else begin  // gi? hon 3 s
-                    if (counter4Hz < 30'd5_999_999) counter4Hz <= counter4Hz + 30'd1;
+            if (preButton == 1'b1 && button == 1'b0) counter <= 0;
+            
+            if (preButton == 1'b0 && button == 1'b0) begin
+                if (counter < FREQ_CLK - 30'd1) counter <= counter + 1;
+                else begin
+                    if (counter10Hz < FREQ_CLK/10 - 30'd1) counter10Hz <= counter10Hz + 23'd1;
                     else begin
-                        counter4Hz <= 0;
+                        counter10Hz <= 30'd0;
                         state <= 2'd1;
                     end
                 end
-                
-            end 
+            end
             
             if (preButton == 1'b0 && button == 1'b1) begin
-                if (counter < 30'd49_999_999 )
-                    if (counter > 30'd24_999_999) state <= 2'd2;
-                    else if (counter > 30'd49_999) state <= 2'd1;
-                end
+                if (FREQ_CLK/10 < counter && counter < FREQ_CLK-1) state <= 2'd2;
+                if (FREQ_CLK/2000 < counter && counter < FREQ_CLK/10 - 1) state <= 2'd1;
+            end
         end
     end
 endmodule
