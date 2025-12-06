@@ -38,6 +38,7 @@ module ButtonStateDetect(clk,reset, button, state);
         end
         else begin 
             preButton <= button;
+            state <= 0;
             
             if (preButton == 1 && button == 0) counter <= 1;
             
@@ -59,4 +60,3 @@ module ButtonStateDetect(clk,reset, button, state);
         end
     end
 endmodule
-
