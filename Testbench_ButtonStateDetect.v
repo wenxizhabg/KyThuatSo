@@ -25,11 +25,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////// 
 
-`timescale 100us    /1us
+`timescale 100us/1us
 
 module TB;
 
-parameter SYSCLK_PERIOD = 1;// 10KHz
+parameter SYSCLK_PERIOD = 1;
 parameter SEC = 10000;
 
 
@@ -42,17 +42,8 @@ initial
 begin
     SYSCLK = 1'b0;
     NSYSRESET = 1'b0;
+    button = 1;
 end
-
-//////////////////////////////////////////////////////////////////////
-// Reset Pulse
-//////////////////////////////////////////////////////////////////////
-initial
-begin
-    #(SYSCLK_PERIOD * 10 )
-        NSYSRESET = 1'b1;
-end
-
 
 //////////////////////////////////////////////////////////////////////
 // Clock Driver
@@ -66,19 +57,15 @@ always @(SYSCLK)
 //////////////////////////////////////////////////////////////////////
 ButtonStateDetect #(.MAX(10000)) ButtonStateDetect_0 (
     // Inputs
-    .clk(SYSCLK),
-    .reset(NSYSRESET),
-    .button(button),
-
+    .clk(SYSCLK), .reset(NSYSRESET), .button(button),
     // Outputs
     .state(state)
-
-    // Inouts
-
 );
 
 initial begin
-    button = 1;
+    
+    #(SYSCLK_PERIOD * 10 ) NSYSRESET = 1'b1;
+    
     
     // Nhấn lâu hơn 1 giây 
     #SEC; button = 0;
