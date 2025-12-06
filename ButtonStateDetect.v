@@ -1,3 +1,23 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Company: <Name>
+//
+// File: ButtonStateDetect.v
+// File history:
+//      <Revision number>: <Date>: <Comments>
+//      <Revision number>: <Date>: <Comments>
+//      <Revision number>: <Date>: <Comments>
+//
+// Description: 
+//
+// <Description here>
+//
+// Targeted device: <Family::PolarFireSoC> <Die::MPFS095T> <Package::FCSG325>
+// Author: <Name>
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+//`timescale <time_units> / <precision>
+
 module ButtonStateDetect(clk,reset, button, state);
     input wire clk, button, reset;
     output reg [1:0] state;
@@ -34,8 +54,9 @@ module ButtonStateDetect(clk,reset, button, state);
             
             if (preButton == 0 && button == 1) begin
                 if (counter > MAX/2) state <= 2;
-                if (counter > MAX/2000) state <= 1;
+                else if (counter > MAX/2000) state <= 1;
             end
         end
     end
 endmodule
+
